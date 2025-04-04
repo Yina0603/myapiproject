@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: django-api
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn myapiproject.wsgi:application"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: todo_project.settings
+      - key: SECRET_KEY
+        value: t!pd6cdtkzihk7r17zijn)v*s&z#e7-lkia#ukj6s_!#iml1=7
+      - key: DEBUG
+        value: False
