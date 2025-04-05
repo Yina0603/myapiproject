@@ -15,15 +15,36 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.http import JsonResponse
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularSwaggerView,
+    SpectacularRedocView,
+)
 from tasks.views import registration_view
 
+
+def api_home(request):
+    return JsonResponse({
+        "message": "歡迎使用我的 Django REST API",
+        "docs": "/api/docs/",
+        "redoc": "/api/redoc/",
+        "task api": "/api/tasks/",
+        "auth": {
+            "register": "/api/auth/register/",
+            "login": "/api/auth/login/"
+        }
+    })
 urlpatterns = [
+    path('', api_home),
     path('admin/', admin.site.urls),
-    path('api/', include('tasks.urls')),             # 待辦事項相關 API
-    path('api/auth/register/', registration_view),   # 用戶註冊API (在下文定義registration_view)
+    path('api/', include('tasks.urls')),
+    path('api/auth/register/', registration_view),
     path('api/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # JWT登入
     path('api/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # JWT刷新
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
